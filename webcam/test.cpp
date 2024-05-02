@@ -29,6 +29,7 @@ int main()
 
 	auto MyData = UserStruct();
 	auto WebCam = WebCamType(OnFrame, &MyData, true);
+	WebCam.QueryFrame(); // Start sampling the camera
 	while (MyData.NumFrames < 100) std::cout << "";
 	
 

@@ -792,8 +792,6 @@ namespace WindowsWebCamTypeLib
 		}
 
 		if (FAILED(hr)) throw SetDeviceFailed(FH(hr) + ": `Reader->GetNativeMediaType()`: couldn't find the supported media type.");
-
-		QueryFrame();
 	}
 
 	void WebCamTypeInternal::QueryFrame()

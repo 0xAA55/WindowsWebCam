@@ -1,0 +1,3 @@
+[submodule "unibmp"]
+	path = unibmp
+	url = https://github.com/0xAA55/unibmp.git

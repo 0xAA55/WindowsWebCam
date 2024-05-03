@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;webcam.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,7 +140,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;webcam.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -159,7 +159,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;webcam.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -185,17 +185,25 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3_mt.lib;unibmp.lib;webcam.lib;opengl32.lib;gdi32.lib;user32.lib;shell32.lib;ole32.lib;mfplat.lib;mf.lib;mfreadwrite.lib;mfuuid.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glcore.cpp" />
     <ClCompile Include="glfwwrap.cpp" />
+    <ClCompile Include="glmesh.cpp" />
+    <ClCompile Include="glprogram.cpp" />
+    <ClCompile Include="gltexstream.cpp" />
+    <ClCompile Include="glvertex.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glcore.hpp" />
     <ClInclude Include="glfwwrap.hpp" />
+    <ClInclude Include="glmesh.hpp" />
+    <ClInclude Include="glprogram.hpp" />
+    <ClInclude Include="gltexstream.hpp" />
+    <ClInclude Include="glvertex.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,12 +24,36 @@
     <ClCompile Include="glfwwrap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="glmesh.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="glprogram.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="glvertex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gltexstream.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glcore.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="glfwwrap.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="glmesh.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="glprogram.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="glvertex.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="gltexstream.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

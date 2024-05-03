@@ -24,6 +24,7 @@ namespace WindowsWebCamTypeLib
 	void WebCamType::SetDevice(size_t Index)
 	{
 		auto enumerated = EnumeratedDevices();
+		if (Index >= enumerated.Count) throw SetDeviceFailed(std::string("Device index `") + std::to_string(Index) + "` is out of bound.");
 		reinterpret_cast<WebCamTypeInternal*>(Internal.get())->SetDevice(enumerated.Devices[Index]);
 	}
 

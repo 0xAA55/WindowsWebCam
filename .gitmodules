@@ -1,3 +1,6 @@
 [submodule "unibmp"]
 	path = unibmp
 	url = https://github.com/0xAA55/unibmp.git
+[submodule "glm"]
+	path = glm
+	url = https://github.com/g-truc/glm.git

@@ -55,11 +55,11 @@ namespace WindowsWebCamTypeLib
 	class WebCamTypeInternal;
 	using OnFrameCBInternalType = void (*)(void* Userdata, WebCamTypeInternal& wc, bool FrameUpdated);
 
-	using ConverterFuncType = void(*)(Image_RGBA8& FrameBuffer, const BYTE* pSrc, size_t SrcPitch, uint32_t Width, uint32_t Height);
-	void TransformImage_RGB32(Image_RGBA8& FrameBuffer, const BYTE* pSrc, size_t SrcPitch, uint32_t Width, uint32_t Height);
-	void TransformImage_RGB24(Image_RGBA8& FrameBuffer, const BYTE* pSrc, size_t SrcPitch, uint32_t Width, uint32_t Height);
-	void TransformImage_YUY2(Image_RGBA8& FrameBuffer, const BYTE* pSrc, size_t SrcPitch, uint32_t Width, uint32_t Height);
-	void TransformImage_NV12(Image_RGBA8& FrameBuffer, const BYTE* pSrc, size_t SrcPitch, uint32_t Width, uint32_t Height);
+	using ConverterFuncType = void(*)(Image_RGBA8& FrameBuffer, const BYTE* pSrc, int32_t SrcPitch, uint32_t Width, uint32_t Height);
+	void TransformImage_RGB32(Image_RGBA8& FrameBuffer, const BYTE* pSrc, int32_t SrcPitch, uint32_t Width, uint32_t Height);
+	void TransformImage_RGB24(Image_RGBA8& FrameBuffer, const BYTE* pSrc, int32_t SrcPitch, uint32_t Width, uint32_t Height);
+	void TransformImage_YUY2(Image_RGBA8& FrameBuffer, const BYTE* pSrc, int32_t SrcPitch, uint32_t Width, uint32_t Height);
+	void TransformImage_NV12(Image_RGBA8& FrameBuffer, const BYTE* pSrc, int32_t SrcPitch, uint32_t Width, uint32_t Height);
 
 	struct GUID_Hash
 	{
@@ -68,6 +68,7 @@ namespace WindowsWebCamTypeLib
 
 	extern const std::unordered_map<GUID, ConverterFuncType, GUID_Hash> VideoFormatConverters;
 	extern const std::unordered_map<GUID, RawFrameType, GUID_Hash> VideoFormatEnumMap;
+	extern const std::unordered_map<RawFrameType, GUID> VideoFormatToGUIDMap;
 
 	std::wstring GetDevicePathW(IMFActivate* Device);
 	std::string GetDevicePath(IMFActivate* Device);
@@ -92,15 +93,17 @@ namespace WindowsWebCamTypeLib
 		uint32_t NumRef = 1;
 		bool FrameUpdated = false;
 		uint32_t SrcWidth = 0, SrcHeight = 0;
-		uint32_t SrcPitch = 0;
+		int32_t SrcPitch = 0;
 		ConverterFuncType FormatConverter = nullptr;
 
-		void GetSrcPitch(IMFMediaType* Type, GUID& subtype, uint32_t* SrcPitch);
+		void GetSrcPitch(IMFMediaType* Type, GUID& subtype, int32_t* SrcPitch);
 		void SetupFrameBuffer(IMFMediaType* Type);
 
 	public:
 		WebCamTypeInternal(OnFrameCBInternalType OnFrameCB, void* Userdata, bool Verbose);
 		~WebCamTypeInternal();
+
+		RawFrameType PreferredRawFrameType = RawFrameType::RGB24;
 
 		std::shared_ptr<Image_RGBA8> FrameBuffer;
 

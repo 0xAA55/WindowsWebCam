@@ -103,7 +103,7 @@ namespace WindowsWebCamTypeLib
 		WebCamTypeInternal(OnFrameCBInternalType OnFrameCB, void* Userdata, bool Verbose);
 		~WebCamTypeInternal();
 
-		RawFrameType PreferredRawFrameType = RawFrameType::RGB24;
+		RawFrameType PreferredRawFrameType = RawFrameType::Unknown;
 
 		std::shared_ptr<Image_RGBA8> FrameBuffer;
 
@@ -134,13 +134,18 @@ namespace WindowsWebCamTypeLib
 		bool IsFrameUpdated() const;
 		void SetIsFrameUpdated(bool IsUpdated);
 		RawFrameType GetCurRawFrameType() const;
+		bool SetRawFrameType(RawFrameType RFT);
+		void SetNativeRawFrameType();
 		std::string GetCurRawFrameTypeStr() const;
 
 		bool Verbose = false;
+		bool VerboseOnQueryFrame = false;
+		bool VerboseOnGetFrame = false;
 		void* Userdata = nullptr;
 		OnFrameCBInternalType OnFrameCB = nullptr;
 
 	public:
 		static std::string GetRawFrameTypeStr(RawFrameType RFT);
+		static std::string GetRawFrameTypeStr(const GUID& guid);
 	};
 }

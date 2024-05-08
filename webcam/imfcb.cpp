@@ -544,7 +544,7 @@ namespace WindowsWebCamTypeLib
 
 		if (!Sample)
 		{
-			if (Verbose)
+			if (VerboseOnGetFrame)
 			{
 				std::cout << "[WARN] `WebCamTypeInternal::OnReadSample(nullptr)`\n";
 			}
@@ -555,7 +555,7 @@ namespace WindowsWebCamTypeLib
 		}
 		else
 		{
-			if (Verbose)
+			if (VerboseOnGetFrame)
 			{
 				std::cout << "[INFO] `WebCamTypeInternal::OnReadSample(\"buffer\")`\n";
 			}
@@ -614,8 +614,13 @@ namespace WindowsWebCamTypeLib
 	}
 
 	bool WebCamTypeInternal::IsFormatSupported(REFGUID subtype)
+	try
 	{
-		return VideoFormatConverters.contains(subtype);
+		return VideoFormatEnumMap.at(subtype) == RawFrameType::RGB32;
+	}
+	catch (const std::out_of_range&)
+	{
+		return false;
 	}
 
 	HRESULT WebCamTypeInternal::TryMediaType(IMFMediaType* Type)
@@ -629,7 +634,7 @@ namespace WindowsWebCamTypeLib
 
 		if (Verbose)
 		{
-			std::cout << std::string("[INFO] Testing media type: {") + GUID2Str(subtype, ":") + "}\n";
+			std::cout << std::string("[INFO] Testing media type: {") + GUID2Str(subtype, ":") + "} (" + GetRawFrameTypeStr(subtype) + ")\n";
 		}
 
 		if (FAILED(hr)) throw SetDeviceFailed(FH(hr) + ": Type->GetGUID(MF_MT_SUBTYPE) failed.");
@@ -641,15 +646,18 @@ namespace WindowsWebCamTypeLib
 			{
 				std::cout << "[INFO] The media type is supported directly without conversion needed.\n";
 			}
-			Found = true;
 		}
 		else
 		{
-			// 是否解码后可支持
-			for (auto& cvt : VideoFormatConverters)
+			if (Verbose)
 			{
-				hr = Type->SetGUID(MF_MT_SUBTYPE, cvt.first);
-				if (FAILED(hr)) throw SetDeviceFailed(FH(hr) + ": Type->SetGUID(MF_MT_SUBTYPE, {" + GUID2Str(cvt.first, ":") + "}) failed.");
+				std::cout << "[WARN] The media type is not supported directly without conversion needed.\n";
+			}
+			// 是否解码后可支持
+			if (VideoFormatConverters.contains(subtype))
+			{
+				hr = Type->SetGUID(MF_MT_SUBTYPE, subtype);
+				if (FAILED(hr)) throw SetDeviceFailed(FH(hr) + ": Type->SetGUID(MF_MT_SUBTYPE, {" + GUID2Str(subtype, ":") + "}) failed.");
 
 				hr = Reader->SetCurrentMediaType(
 					MF_SOURCE_READER_FIRST_VIDEO_STREAM,
@@ -660,18 +668,17 @@ namespace WindowsWebCamTypeLib
 				{
 					if (Verbose)
 					{
-						std::cout << "[INFO] The media type is supported with conversion needed.\n";
+						std::cout << std::string("[INFO] The media type testing (") + GetRawFrameTypeStr(subtype) + ") is supported with conversion needed.\n";
 					}
-					Found = TRUE;
-					break;
+				}
+				else
+				{
+					throw SetDeviceFailed(FH(hr) + ": Reader->SetCurrentMediaType(" + GetRawFrameTypeStr(subtype) + ") failed.");
 				}
 			}
 		}
 
-		if (Found)
-		{
-			SetupFrameBuffer(Type);
-		}
+		SetupFrameBuffer(Type);
 
 		return hr;
 	}
@@ -726,7 +733,108 @@ namespace WindowsWebCamTypeLib
 
 		if (Verbose)
 		{
-			std::cout << std::string("[INFO] The framebuffer is set to ") + std::to_string(SrcWidth) + "x" + std::to_string(SrcHeight) + " with pitch(stride) = " + std::to_string(SrcPitch) + " for source format `" + GetCurRawFrameTypeStr() + "`.\n";
+			std::cout << std::string("[INFO] The framebuffer is set to ") + std::to_string(SrcWidth) + "x" + std::to_string(SrcHeight) + " with pitch(stride) = " + std::to_string(SrcPitch) + " for source format `" + GetRawFrameTypeStr(subtype) + "`.\n";
+		}
+	}
+
+	bool WebCamTypeInternal::SetRawFrameType(RawFrameType RFT)
+	{
+		PreferredRawFrameType = RFT;
+		if (Verbose)
+		{
+			std::cout << std::string("[INFO] Setting up media type to the specified media type (`") + GetRawFrameTypeStr(RFT) + "`)}.\n";
+		}
+		if (RFT == CurRawFrameType)
+		{
+			if (Verbose)
+			{
+				std::cout << std::string("[INFO] The current media type GUID matches the specified media type (`") + GetRawFrameTypeStr(RFT) + "`)}.\n";
+			}
+			return true;
+		}
+		auto& MyTypeGUID = VideoFormatToGUIDMap.at(RFT);
+		GUID TheCurGUID = { 0 };
+		auto Type = COMPtr<IMFMediaType>();
+		HRESULT hr = Reader->GetCurrentMediaType(
+			MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+			&Type
+		);
+		if (!SUCCEEDED(hr)) throw SetDeviceFailed(FH(hr) + ": `Reader->GetCurrentMediaType()` failed.");
+
+		hr = Type->GetGUID(MF_MT_SUBTYPE, &TheCurGUID);
+		if (!SUCCEEDED(hr)) throw SetDeviceFailed(FH(hr) + ": `Type->GetGUID(MF_MT_SUBTYPE)` failed.");
+
+		if (TheCurGUID == MyTypeGUID)
+		{
+			if (Verbose)
+			{
+				std::cout << std::string("[INFO] The current media type GUID matches the specified media type (`") + GetRawFrameTypeStr(RFT) + "`) GUID {" + GUID2Str(TheCurGUID, "-") + "}.\n";
+			}
+			CurRawFrameType = RFT;
+			SetupFrameBuffer(Type);
+			return true;
+		}
+
+		hr = Type->SetGUID(MF_MT_SUBTYPE, MyTypeGUID);
+		if (!SUCCEEDED(hr)) throw SetDeviceFailed(FH(hr) + ": `Type->SetGUID(MF_MT_SUBTYPE)` failed.");
+
+		hr = Reader->SetCurrentMediaType(
+			MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+			NULL,
+			Type
+		);
+		if (SUCCEEDED(hr))
+		{
+			CurRawFrameType = RFT;
+			SetupFrameBuffer(Type);
+			if (Verbose)
+			{
+				std::cout << std::string("[INFO] The media type is set to specified type: ") + GetRawFrameTypeStr(RFT) + "\n";
+			}
+			return true;
+		}
+		else
+		{
+			if (Verbose)
+			{
+				std::cerr << std::string("[WARN] Try to set the media type to specified type: ") + GetRawFrameTypeStr(RFT) + " failed: " + FH(hr) + "\n";
+			}
+			return false;
+		}
+	}
+
+	void WebCamTypeInternal::SetNativeRawFrameType()
+	{
+		// 枚举格式
+		for (uint32_t i = 0; ; i++)
+		{
+			auto Type = COMPtr<IMFMediaType>();
+			HRESULT hr = Reader->GetNativeMediaType(
+				MF_SOURCE_READER_FIRST_VIDEO_STREAM,
+				i,
+				&Type
+			);
+
+			// 穷举到最后一种格式类型
+			if (FAILED(hr)) { break; }
+
+			// 测试这种格式类型是否支持
+			hr = TryMediaType(Type);
+
+			if (SUCCEEDED(hr))
+			{
+				GUID subtype = { 0 };
+				hr = Type->GetGUID(MF_MT_SUBTYPE, &subtype);
+				CurRawFrameType = VideoFormatEnumMap.at(subtype);
+				if (CurRawFrameType == PreferredRawFrameType)
+				{
+					if (Verbose)
+					{
+						std::cout << std::string("[INFO] The selected format matches the preferred raw format: ") + GetRawFrameTypeStr(PreferredRawFrameType) + "\n";
+					}
+				}
+				break;
+			}
 		}
 	}
 
@@ -776,106 +884,11 @@ namespace WindowsWebCamTypeLib
 
 		if (PreferredRawFrameType!= RawFrameType::Unknown)
 		{
-			auto& MyTypeGUID = VideoFormatToGUIDMap.at(PreferredRawFrameType);
-			GUID TheCurGUID = { 0 };
-			auto Type = COMPtr<IMFMediaType>();
-			hr = Reader->GetCurrentMediaType(
-				MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-				&Type
-			);
-			if (!SUCCEEDED(hr)) throw SetDeviceFailed(FH(hr) + ": `Reader->GetCurrentMediaType()` failed.");
-
-			hr = Type->GetGUID(MF_MT_SUBTYPE, &TheCurGUID);
-			if (!SUCCEEDED(hr)) throw SetDeviceFailed(FH(hr) + ": `Type->GetGUID(MF_MT_SUBTYPE)` failed.");
-
-			if (TheCurGUID == MyTypeGUID)
-			{
-				if (Verbose)
-				{
-					std::cout << std::string("[INFO] The current media type GUID matches the preferred media type (`") + GetRawFrameTypeStr(PreferredRawFrameType) + "`) GUID {" + GUID2Str(TheCurGUID, "-") + "}.\n";
-				}
-				hr = TryMediaType(Type);
-				if (SUCCEEDED(hr))
-				{
-					CurRawFrameType = PreferredRawFrameType;
-					return;
-				}
-				else
-				{
-					if (Verbose)
-					{
-						std::cerr << std::string("[WARN] `TryMediaType(Type)` on the current type failed: ") + FH(hr) + "\n";
-					}
-				}
-			}
-
-			hr = Type->SetGUID(MF_MT_SUBTYPE, MyTypeGUID);
-			if (SUCCEEDED(hr))
-			{
-				hr = TryMediaType(Type);
-				if (SUCCEEDED(hr))
-				{
-					hr = Reader->SetCurrentMediaType(
-						MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-						NULL,
-						Type
-					);
-					if (SUCCEEDED(hr))
-					{
-						if (Verbose)
-						{
-							std::cout << std::string("[INFO] The media type is set to out preferred type: ") + GetRawFrameTypeStr(PreferredRawFrameType) + "\n";
-						}
-						return;
-					}
-					else
-					{
-						if (Verbose)
-						{
-							std::cerr << std::string("[WARN] Try to set the media type to out preferred type: ") + GetRawFrameTypeStr(PreferredRawFrameType) + " failed: " + FH(hr) + "\n";
-						}
-					}
-				}
-				else
-				{
-					if (Verbose)
-					{
-						std::cerr << std::string("[WARN] Try to set the media type to out preferred type: ") + GetRawFrameTypeStr(PreferredRawFrameType) + " failed: " + FH(hr) + "\n";
-					}
-				}
-			}
+			SetRawFrameType(PreferredRawFrameType);
 		}
-
-		// 枚举格式
-		for (uint32_t i = 0; ; i++)
+		else
 		{
-			auto Type = COMPtr<IMFMediaType>();
-			hr = Reader->GetNativeMediaType(
-				MF_SOURCE_READER_FIRST_VIDEO_STREAM,
-				i,
-				&Type
-			);
-
-			// 穷举到最后一种格式类型
-			if (FAILED(hr)) { break; }
-
-			// 测试这种格式类型是否支持
-			hr = TryMediaType(Type);
-
-			if (SUCCEEDED(hr))
-			{
-				GUID subtype = { 0 };
-				hr = Type->GetGUID(MF_MT_SUBTYPE, &subtype);
-				CurRawFrameType = VideoFormatEnumMap.at(subtype);
-				if (CurRawFrameType == PreferredRawFrameType)
-				{
-					if (Verbose)
-					{
-						std::cout << std::string("[INFO] The selected format matches the preferred raw format: ") + GetRawFrameTypeStr(PreferredRawFrameType) + "\n";
-					}
-				}
-				break;
-			}
+			SetNativeRawFrameType();
 		}
 
 		if (FAILED(hr)) throw SetDeviceFailed(FH(hr) + ": `Reader->GetNativeMediaType()`: couldn't find the supported media type.");
@@ -883,7 +896,7 @@ namespace WindowsWebCamTypeLib
 
 	void WebCamTypeInternal::QueryFrame()
 	{
-		if (Verbose)
+		if (VerboseOnQueryFrame)
 		{
 			std::cout << "[INFO] Querying a frame.\n";
 		}
@@ -921,6 +934,16 @@ namespace WindowsWebCamTypeLib
 		return GetRawFrameTypeStr(CurRawFrameType);
 	}
 
+	std::string WebCamTypeInternal::GetRawFrameTypeStr(const GUID& guid)
+	try
+	{
+		return GetRawFrameTypeStr(VideoFormatEnumMap.at(guid));
+	}
+	catch (const std::out_of_range&)
+	{
+		return "unknown";
+	}
+
 	std::string WebCamTypeInternal::GetRawFrameTypeStr(RawFrameType RFT)
 	{
 		switch (RFT)
@@ -947,7 +970,8 @@ namespace WindowsWebCamTypeLib
 		uint32_t Width, uint32_t Height
 	)
 	{
-#pragma omp parallel for
+// 此处无需使用多线程
+// #pragma omp parallel for
 		for (int y = 0; y < int(Height); y++)
 		{
 			RGBTRIPLE* pSrcPel = (RGBTRIPLE*)(pSrc + y * SrcPitch);
@@ -971,7 +995,7 @@ namespace WindowsWebCamTypeLib
 	// RGB-32 to RGB-32 
 	//
 	// Note: This function is needed to copy the image from system
-	// memory to the Direct3D surface.
+	// memory to the my surface.
 	//-------------------------------------------------------------------
 
 	void TransformImage_RGB32
@@ -982,8 +1006,9 @@ namespace WindowsWebCamTypeLib
 	)
 	{
 		MFCopyImage(
-			reinterpret_cast<BYTE*>(FrameBuffer.GetBitmapDataPtr()), sizeof(Pixel_RGBA8) * FrameBuffer.GetWidth(),
-			pSrc, (LONG)SrcPitch,
+			reinterpret_cast<BYTE*>(FrameBuffer.GetBitmapDataPtr()),
+			FrameBuffer.GetPitch(),
+			pSrc, SrcPitch,
 			Width * 4, Height);
 	}
 
@@ -1000,7 +1025,7 @@ namespace WindowsWebCamTypeLib
 		uint32_t Width, uint32_t Height
 	)
 	{
-#pragma omp parallel for
+// #pragma omp parallel for
 		for (int y = 0; y < int(Height); y++)
 		{
 			auto pDestPel = FrameBuffer.GetBitmapRowPtr(y);
@@ -1038,7 +1063,7 @@ namespace WindowsWebCamTypeLib
 		const BYTE* lpBitsCb = lpBitsY + (Height * SrcPitch);
 		const BYTE* lpBitsCr = lpBitsCb + 1;
 
-#pragma omp parallel for
+// #pragma omp parallel for
 		for (int y = 0; y < int(Height); y += 2)
 		{
 			const BYTE* lpLineY1 = lpBitsY + SrcPitch * (y + 0);

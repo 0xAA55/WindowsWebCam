@@ -35,6 +35,10 @@ namespace WindowsWebCamTypeLib
 		bool IsFrameUpdated() const;
 		void SetIsFrameUpdated(bool IsUpdated);
 		std::string GetCurRawFrameType() const;
+		bool SetCurRawFrameTypeRGB32();
+		bool SetCurRawFrameTypeRGB24();
+		bool SetCurRawFrameTypeYUY2();
+		bool SetCurRawFrameTypeNV12();
 
 		bool Verbose = false;
 		void* Userdata = nullptr;

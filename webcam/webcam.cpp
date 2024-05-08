@@ -99,4 +99,20 @@ namespace WindowsWebCamTypeLib
 	{
 		return reinterpret_cast<WebCamTypeInternal*>(Internal.get())->GetCurRawFrameTypeStr();
 	}
+	bool WebCamType::SetCurRawFrameTypeRGB32()
+	{
+		return reinterpret_cast<WebCamTypeInternal*>(Internal.get())->SetRawFrameType(RawFrameType::RGB32);
+	}
+	bool WebCamType::SetCurRawFrameTypeRGB24()
+	{
+		return reinterpret_cast<WebCamTypeInternal*>(Internal.get())->SetRawFrameType(RawFrameType::RGB24);
+	}
+	bool WebCamType::SetCurRawFrameTypeYUY2()
+	{
+		return reinterpret_cast<WebCamTypeInternal*>(Internal.get())->SetRawFrameType(RawFrameType::YUY2);
+	}
+	bool WebCamType::SetCurRawFrameTypeNV12()
+	{
+		return reinterpret_cast<WebCamTypeInternal*>(Internal.get())->SetRawFrameType(RawFrameType::NV12);
+	}
 }

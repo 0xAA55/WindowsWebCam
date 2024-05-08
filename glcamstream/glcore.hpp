@@ -109,14 +109,14 @@ namespace GL
 
 	public:
 		template<typename FuncType>
-		FuncType GetProc(const char* symbol)
+		FuncType GetProc(const char* symbol, FuncType DefaultBehaviorFunc)
 		{
 			void *ProcAddress = GetProcAddress(symbol);
 			if (!ProcAddress)
 			{
-				throw NullFuncPtrException("OpenGL function pointer is null.\n");
+				return DefaultBehaviorFunc;
 			}
-			return static_cast<FuncType>(ProcAddress);
+			return reinterpret_cast<FuncType>(ProcAddress);
 		}
 		inline void GetVersion(int& Major, int& Minor, int& Release)
 		{
@@ -305,54 +305,54 @@ namespace GL
 		static constexpr GLenum TEXTURE_WRAP_T = 0x2803;
 		static constexpr GLint REPEAT = 0x2901;
 
-		static const PFNGLCULLFACEPROC CullFace;
-		static const PFNGLFRONTFACEPROC FrontFace;
-		static const PFNGLHINTPROC Hint;
-		static const PFNGLLINEWIDTHPROC LineWidth;
-		static const PFNGLPOINTSIZEPROC PointSize;
-		static const PFNGLPOLYGONMODEPROC PolygonMode;
-		static const PFNGLSCISSORPROC Scissor;
-		static const PFNGLTEXPARAMETERFPROC TexParameterf;
-		static const PFNGLTEXPARAMETERFVPROC TexParameterfv;
-		static const PFNGLTEXPARAMETERIPROC TexParameteri;
-		static const PFNGLTEXPARAMETERIVPROC TexParameteriv;
-		static const PFNGLTEXIMAGE1DPROC TexImage1D;
-		static const PFNGLTEXIMAGE2DPROC TexImage2D;
-		static const PFNGLDRAWBUFFERPROC DrawBuffer;
-		static const PFNGLCLEARPROC Clear;
-		static const PFNGLCLEARCOLORPROC ClearColor;
-		static const PFNGLCLEARSTENCILPROC ClearStencil;
-		static const PFNGLCLEARDEPTHPROC ClearDepth;
-		static const PFNGLSTENCILMASKPROC StencilMask;
-		static const PFNGLCOLORMASKPROC ColorMask;
-		static const PFNGLDEPTHMASKPROC DepthMask;
-		static const PFNGLDISABLEPROC Disable;
-		static const PFNGLENABLEPROC Enable;
-		static const PFNGLFINISHPROC Finish;
-		static const PFNGLFLUSHPROC Flush;
-		static const PFNGLBLENDFUNCPROC BlendFunc;
-		static const PFNGLLOGICOPPROC LogicOp;
-		static const PFNGLSTENCILFUNCPROC StencilFunc;
-		static const PFNGLSTENCILOPPROC StencilOp;
-		static const PFNGLDEPTHFUNCPROC DepthFunc;
-		static const PFNGLPIXELSTOREFPROC PixelStoref;
-		static const PFNGLPIXELSTOREIPROC PixelStorei;
-		static const PFNGLREADBUFFERPROC ReadBuffer;
-		static const PFNGLREADPIXELSPROC ReadPixels;
-		static const PFNGLGETBOOLEANVPROC GetBooleanv;
-		static const PFNGLGETDOUBLEVPROC GetDoublev;
-		static const PFNGLGETERRORPROC GetError;
-		static const PFNGLGETFLOATVPROC GetFloatv;
-		static const PFNGLGETINTEGERVPROC GetIntegerv;
-		static const PFNGLGETSTRINGPROC GetString;
-		static const PFNGLGETTEXIMAGEPROC GetTexImage;
-		static const PFNGLGETTEXPARAMETERFVPROC GetTexParameterfv;
-		static const PFNGLGETTEXPARAMETERIVPROC GetTexParameteriv;
-		static const PFNGLGETTEXLEVELPARAMETERFVPROC GetTexLevelParameterfv;
-		static const PFNGLGETTEXLEVELPARAMETERIVPROC GetTexLevelParameteriv;
-		static const PFNGLISENABLEDPROC IsEnabled;
-		static const PFNGLDEPTHRANGEPROC DepthRange;
-		static const PFNGLVIEWPORTPROC Viewport;
+		PFNGLCULLFACEPROC CullFace;
+		PFNGLFRONTFACEPROC FrontFace;
+		PFNGLHINTPROC Hint;
+		PFNGLLINEWIDTHPROC LineWidth;
+		PFNGLPOINTSIZEPROC PointSize;
+		PFNGLPOLYGONMODEPROC PolygonMode;
+		PFNGLSCISSORPROC Scissor;
+		PFNGLTEXPARAMETERFPROC TexParameterf;
+		PFNGLTEXPARAMETERFVPROC TexParameterfv;
+		PFNGLTEXPARAMETERIPROC TexParameteri;
+		PFNGLTEXPARAMETERIVPROC TexParameteriv;
+		PFNGLTEXIMAGE1DPROC TexImage1D;
+		PFNGLTEXIMAGE2DPROC TexImage2D;
+		PFNGLDRAWBUFFERPROC DrawBuffer;
+		PFNGLCLEARPROC Clear;
+		PFNGLCLEARCOLORPROC ClearColor;
+		PFNGLCLEARSTENCILPROC ClearStencil;
+		PFNGLCLEARDEPTHPROC ClearDepth;
+		PFNGLSTENCILMASKPROC StencilMask;
+		PFNGLCOLORMASKPROC ColorMask;
+		PFNGLDEPTHMASKPROC DepthMask;
+		PFNGLDISABLEPROC Disable;
+		PFNGLENABLEPROC Enable;
+		PFNGLFINISHPROC Finish;
+		PFNGLFLUSHPROC Flush;
+		PFNGLBLENDFUNCPROC BlendFunc;
+		PFNGLLOGICOPPROC LogicOp;
+		PFNGLSTENCILFUNCPROC StencilFunc;
+		PFNGLSTENCILOPPROC StencilOp;
+		PFNGLDEPTHFUNCPROC DepthFunc;
+		PFNGLPIXELSTOREFPROC PixelStoref;
+		PFNGLPIXELSTOREIPROC PixelStorei;
+		PFNGLREADBUFFERPROC ReadBuffer;
+		PFNGLREADPIXELSPROC ReadPixels;
+		PFNGLGETBOOLEANVPROC GetBooleanv;
+		PFNGLGETDOUBLEVPROC GetDoublev;
+		PFNGLGETERRORPROC GetError;
+		PFNGLGETFLOATVPROC GetFloatv;
+		PFNGLGETINTEGERVPROC GetIntegerv;
+		PFNGLGETSTRINGPROC GetString;
+		PFNGLGETTEXIMAGEPROC GetTexImage;
+		PFNGLGETTEXPARAMETERFVPROC GetTexParameterfv;
+		PFNGLGETTEXPARAMETERIVPROC GetTexParameteriv;
+		PFNGLGETTEXLEVELPARAMETERFVPROC GetTexLevelParameterfv;
+		PFNGLGETTEXLEVELPARAMETERIVPROC GetTexLevelParameteriv;
+		PFNGLISENABLEDPROC IsEnabled;
+		PFNGLDEPTHRANGEPROC DepthRange;
+		PFNGLVIEWPORTPROC Viewport;
 
 	};
 	typedef khronos_float_t GLclampf;
@@ -1255,27 +1255,27 @@ namespace GL
 		PFNGLVERTEXATTRIB4USVPROC VertexAttrib4usv;
 		PFNGLVERTEXATTRIBPOINTERPROC VertexAttribPointer;
 
-		inline void Uniformf(GLint location, GLfloat v0) { Uniform1f(location, v0);}
-		inline void Uniformf(GLint location, GLfloat v0, GLfloat v1) { Uniform2f(location, v0, v1);}
-		inline void Uniformf(GLint location, GLfloat v0, GLfloat v1, GLfloat v2) { Uniform3f(location, v0, v1, v2);}
-		inline void Uniformf(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) { Uniform4f(location, v0, v1, v2, v3);}
-		inline void Uniformi(GLint location, GLint v0) { Uniform1i(location, v0);}
-		inline void Uniformi(GLint location, GLint v0, GLint v1) { Uniform2i(location, v0, v1);}
-		inline void Uniformi(GLint location, GLint v0, GLint v1, GLint v2) { Uniform3i(location, v0, v1, v2);}
-		inline void Uniformi(GLint location, GLint v0, GLint v1, GLint v2, GLint v3) { Uniform4i(location, v0, v1, v2, v3);}
-		inline void VertexAttribd(GLuint index, GLdouble x) { VertexAttrib1d(index, x);}
-		inline void VertexAttribf(GLuint index, GLfloat x) { VertexAttrib1f(index, x);}
-		inline void VertexAttribs(GLuint index, GLshort x) { VertexAttrib1s(index, x);}
-		inline void VertexAttribd(GLuint index, GLdouble x, GLdouble y) { VertexAttrib2d(index, x, y);}
-		inline void VertexAttribf(GLuint index, GLfloat x, GLfloat y) { VertexAttrib2f(index, x, y);}
-		inline void VertexAttribs(GLuint index, GLshort x, GLshort y) { VertexAttrib2s(index, x, y);}
-		inline void VertexAttribd(GLuint index, GLdouble x, GLdouble y, GLdouble z) { VertexAttrib3d(index, x, y, z);}
-		inline void VertexAttribf(GLuint index, GLfloat x, GLfloat y, GLfloat z) { VertexAttrib3f(index, x, y, z);}
-		inline void VertexAttribs(GLuint index, GLshort x, GLshort y, GLshort z) { VertexAttrib3s(index, x, y, z);}
-		inline void VertexAttribub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w) { VertexAttrib4Nub(index, x, y, z, w);}
-		inline void VertexAttribd(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w) { VertexAttrib4d(index, x, y, z, w);}
-		inline void VertexAttribf(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w) { VertexAttrib4f(index, x, y, z, w);}
-		inline void VertexAttribs(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w) { VertexAttrib4s(index, x, y, z, w);}
+		inline void Uniformf(GLint location, GLfloat v0) const { Uniform1f(location, v0);}
+		inline void Uniformf(GLint location, GLfloat v0, GLfloat v1) const { Uniform2f(location, v0, v1);}
+		inline void Uniformf(GLint location, GLfloat v0, GLfloat v1, GLfloat v2) const { Uniform3f(location, v0, v1, v2);}
+		inline void Uniformf(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) const { Uniform4f(location, v0, v1, v2, v3);}
+		inline void Uniformi(GLint location, GLint v0) const { Uniform1i(location, v0);}
+		inline void Uniformi(GLint location, GLint v0, GLint v1) const { Uniform2i(location, v0, v1);}
+		inline void Uniformi(GLint location, GLint v0, GLint v1, GLint v2) const { Uniform3i(location, v0, v1, v2);}
+		inline void Uniformi(GLint location, GLint v0, GLint v1, GLint v2, GLint v3) const { Uniform4i(location, v0, v1, v2, v3);}
+		inline void VertexAttribd(GLuint index, GLdouble x) const { VertexAttrib1d(index, x);}
+		inline void VertexAttribf(GLuint index, GLfloat x) const { VertexAttrib1f(index, x);}
+		inline void VertexAttribs(GLuint index, GLshort x) const { VertexAttrib1s(index, x);}
+		inline void VertexAttribd(GLuint index, GLdouble x, GLdouble y) const { VertexAttrib2d(index, x, y);}
+		inline void VertexAttribf(GLuint index, GLfloat x, GLfloat y) const { VertexAttrib2f(index, x, y);}
+		inline void VertexAttribs(GLuint index, GLshort x, GLshort y) const { VertexAttrib2s(index, x, y);}
+		inline void VertexAttribd(GLuint index, GLdouble x, GLdouble y, GLdouble z) const { VertexAttrib3d(index, x, y, z);}
+		inline void VertexAttribf(GLuint index, GLfloat x, GLfloat y, GLfloat z) const { VertexAttrib3f(index, x, y, z);}
+		inline void VertexAttribs(GLuint index, GLshort x, GLshort y, GLshort z) const { VertexAttrib3s(index, x, y, z);}
+		inline void VertexAttribub(GLuint index, GLubyte x, GLubyte y, GLubyte z, GLubyte w) const { VertexAttrib4Nub(index, x, y, z, w);}
+		inline void VertexAttribd(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w) const { VertexAttrib4d(index, x, y, z, w);}
+		inline void VertexAttribf(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w) const { VertexAttrib4f(index, x, y, z, w);}
+		inline void VertexAttribs(GLuint index, GLshort x, GLshort y, GLshort z, GLshort w) const { VertexAttrib4s(index, x, y, z, w);}
 	};
 
 	class Version21 : public Version20
@@ -1749,18 +1749,18 @@ namespace GL
 		PFNGLGENVERTEXARRAYSPROC GenVertexArrays;
 		PFNGLISVERTEXARRAYPROC IsVertexArray;
 
-		inline void VertexAttribIi(GLuint index, GLint x) { VertexAttribI1i(index, x);}
-		inline void VertexAttribIi(GLuint index, GLint x, GLint y) { VertexAttribI2i(index, x, y);}
-		inline void VertexAttribIi(GLuint index, GLint x, GLint y, GLint z) { VertexAttribI3i(index, x, y, z);}
-		inline void VertexAttribIi(GLuint index, GLint x, GLint y, GLint z, GLint w) { VertexAttribI4i(index, x, y, z, w);}
-		inline void VertexAttribIui(GLuint index, GLuint x) { VertexAttribI1ui(index, x);}
-		inline void VertexAttribIui(GLuint index, GLuint x, GLuint y) { VertexAttribI2ui(index, x, y);}
-		inline void VertexAttribIui(GLuint index, GLuint x, GLuint y, GLuint z) { VertexAttribI3ui(index, x, y, z);}
-		inline void VertexAttribIui(GLuint index, GLuint x, GLuint y, GLuint z, GLuint w) { VertexAttribI4ui(index, x, y, z, w);}
-		inline void Uniformui(GLint location, GLuint v0) { Uniform1ui(location, v0);}
-		inline void Uniformui(GLint location, GLuint v0, GLuint v1) { Uniform2ui(location, v0, v1);}
-		inline void Uniformui(GLint location, GLuint v0, GLuint v1, GLuint v2) { Uniform3ui(location, v0, v1, v2);}
-		inline void Uniformui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) { Uniform4ui(location, v0, v1, v2, v3);}
+		inline void VertexAttribIi(GLuint index, GLint x) const { VertexAttribI1i(index, x);}
+		inline void VertexAttribIi(GLuint index, GLint x, GLint y) const { VertexAttribI2i(index, x, y);}
+		inline void VertexAttribIi(GLuint index, GLint x, GLint y, GLint z) const { VertexAttribI3i(index, x, y, z);}
+		inline void VertexAttribIi(GLuint index, GLint x, GLint y, GLint z, GLint w) const { VertexAttribI4i(index, x, y, z, w);}
+		inline void VertexAttribIui(GLuint index, GLuint x) const { VertexAttribI1ui(index, x);}
+		inline void VertexAttribIui(GLuint index, GLuint x, GLuint y) const { VertexAttribI2ui(index, x, y);}
+		inline void VertexAttribIui(GLuint index, GLuint x, GLuint y, GLuint z) const { VertexAttribI3ui(index, x, y, z);}
+		inline void VertexAttribIui(GLuint index, GLuint x, GLuint y, GLuint z, GLuint w) const { VertexAttribI4ui(index, x, y, z, w);}
+		inline void Uniformui(GLint location, GLuint v0) const { Uniform1ui(location, v0);}
+		inline void Uniformui(GLint location, GLuint v0, GLuint v1) const { Uniform2ui(location, v0, v1);}
+		inline void Uniformui(GLint location, GLuint v0, GLuint v1, GLuint v2) const { Uniform3ui(location, v0, v1, v2);}
+		inline void Uniformui(GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) const { Uniform4ui(location, v0, v1, v2, v3);}
 	};
 
 	class Version31 : public Version30
@@ -2316,10 +2316,10 @@ namespace GL
 		PFNGLENDQUERYINDEXEDPROC EndQueryIndexed;
 		PFNGLGETQUERYINDEXEDIVPROC GetQueryIndexediv;
 
-		inline void Uniformd(GLint location, GLdouble x) { Uniform1d(location, x);}
-		inline void Uniformd(GLint location, GLdouble x, GLdouble y) { Uniform2d(location, x, y);}
-		inline void Uniformd(GLint location, GLdouble x, GLdouble y, GLdouble z) { Uniform3d(location, x, y, z);}
-		inline void Uniformd(GLint location, GLdouble x, GLdouble y, GLdouble z, GLdouble w) { Uniform4d(location, x, y, z, w);}
+		inline void Uniformd(GLint location, GLdouble x) const { Uniform1d(location, x);}
+		inline void Uniformd(GLint location, GLdouble x, GLdouble y) const { Uniform2d(location, x, y);}
+		inline void Uniformd(GLint location, GLdouble x, GLdouble y, GLdouble z) const { Uniform3d(location, x, y, z);}
+		inline void Uniformd(GLint location, GLdouble x, GLdouble y, GLdouble z, GLdouble w) const { Uniform4d(location, x, y, z, w);}
 	};
 
 	class Version41 : public Version40
@@ -2547,26 +2547,26 @@ namespace GL
 		PFNGLGETFLOATI_VPROC GetFloati_v;
 		PFNGLGETDOUBLEI_VPROC GetDoublei_v;
 
-		inline void ProgramUniformi(GLuint program, GLint location, GLint v0) { ProgramUniform1i(program, location, v0);}
-		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0) { ProgramUniform1f(program, location, v0);}
-		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0) { ProgramUniform1d(program, location, v0);}
-		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0) { ProgramUniform1ui(program, location, v0);}
-		inline void ProgramUniformi(GLuint program, GLint location, GLint v0, GLint v1) { ProgramUniform2i(program, location, v0, v1);}
-		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0, GLfloat v1) { ProgramUniform2f(program, location, v0, v1);}
-		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0, GLdouble v1) { ProgramUniform2d(program, location, v0, v1);}
-		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0, GLuint v1) { ProgramUniform2ui(program, location, v0, v1);}
-		inline void ProgramUniformi(GLuint program, GLint location, GLint v0, GLint v1, GLint v2) { ProgramUniform3i(program, location, v0, v1, v2);}
-		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) { ProgramUniform3f(program, location, v0, v1, v2);}
-		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0, GLdouble v1, GLdouble v2) { ProgramUniform3d(program, location, v0, v1, v2);}
-		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2) { ProgramUniform3ui(program, location, v0, v1, v2);}
-		inline void ProgramUniformi(GLuint program, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) { ProgramUniform4i(program, location, v0, v1, v2, v3);}
-		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) { ProgramUniform4f(program, location, v0, v1, v2, v3);}
-		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) { ProgramUniform4d(program, location, v0, v1, v2, v3);}
-		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) { ProgramUniform4ui(program, location, v0, v1, v2, v3);}
-		inline void VertexAttribLd(GLuint index, GLdouble x) { VertexAttribL1d(index, x);}
-		inline void VertexAttribLd(GLuint index, GLdouble x, GLdouble y) { VertexAttribL2d(index, x, y);}
-		inline void VertexAttribLd(GLuint index, GLdouble x, GLdouble y, GLdouble z) { VertexAttribL3d(index, x, y, z);}
-		inline void VertexAttribLd(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w) { VertexAttribL4d(index, x, y, z, w);}
+		inline void ProgramUniformi(GLuint program, GLint location, GLint v0) const { ProgramUniform1i(program, location, v0);}
+		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0) const { ProgramUniform1f(program, location, v0);}
+		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0) const { ProgramUniform1d(program, location, v0);}
+		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0) const { ProgramUniform1ui(program, location, v0);}
+		inline void ProgramUniformi(GLuint program, GLint location, GLint v0, GLint v1) const { ProgramUniform2i(program, location, v0, v1);}
+		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0, GLfloat v1) const { ProgramUniform2f(program, location, v0, v1);}
+		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0, GLdouble v1) const { ProgramUniform2d(program, location, v0, v1);}
+		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0, GLuint v1) const { ProgramUniform2ui(program, location, v0, v1);}
+		inline void ProgramUniformi(GLuint program, GLint location, GLint v0, GLint v1, GLint v2) const { ProgramUniform3i(program, location, v0, v1, v2);}
+		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2) const { ProgramUniform3f(program, location, v0, v1, v2);}
+		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0, GLdouble v1, GLdouble v2) const { ProgramUniform3d(program, location, v0, v1, v2);}
+		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2) const { ProgramUniform3ui(program, location, v0, v1, v2);}
+		inline void ProgramUniformi(GLuint program, GLint location, GLint v0, GLint v1, GLint v2, GLint v3) const { ProgramUniform4i(program, location, v0, v1, v2, v3);}
+		inline void ProgramUniformf(GLuint program, GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3) const { ProgramUniform4f(program, location, v0, v1, v2, v3);}
+		inline void ProgramUniformd(GLuint program, GLint location, GLdouble v0, GLdouble v1, GLdouble v2, GLdouble v3) const { ProgramUniform4d(program, location, v0, v1, v2, v3);}
+		inline void ProgramUniformui(GLuint program, GLint location, GLuint v0, GLuint v1, GLuint v2, GLuint v3) const { ProgramUniform4ui(program, location, v0, v1, v2, v3);}
+		inline void VertexAttribLd(GLuint index, GLdouble x) const { VertexAttribL1d(index, x);}
+		inline void VertexAttribLd(GLuint index, GLdouble x, GLdouble y) const { VertexAttribL2d(index, x, y);}
+		inline void VertexAttribLd(GLuint index, GLdouble x, GLdouble y, GLdouble z) const { VertexAttribL3d(index, x, y, z);}
+		inline void VertexAttribLd(GLuint index, GLdouble x, GLdouble y, GLdouble z, GLdouble w) const { VertexAttribL4d(index, x, y, z, w);}
 	};
 
 	class Version42 : public Version41

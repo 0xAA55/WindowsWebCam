@@ -29,7 +29,7 @@ int main(void)
 		static void OnWebcamFrameCB(void* Userdata, WebCamType& wc, bool FrameUpdated)
 		{
 			auto PtrThis = reinterpret_cast<MyWebCamDemoWindowType*>(Userdata);
-			wc.QueryFrame();
+			if (!FrameUpdated) wc.QueryFrame();
 		}
 
 		void Initialize(const GLCtxType& gl)
@@ -90,6 +90,7 @@ int main(void)
 			{
 				WebCam->SetIsFrameUpdated(false);
 				TexStreamer->Update();
+				WebCam->QueryFrame();
 			}
 
 			SwapBuffers();
